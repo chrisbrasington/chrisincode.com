@@ -20,7 +20,6 @@ body {
 	margin: 0; 	padding: 0; 
 /*	background: #070707 url(bg.jpg) no-repeat center top; */
 	background: #070707;
-	text-align: center;
 }
 
 /* Links */
@@ -201,6 +200,7 @@ input.button {
 /* ------------------------------------------
    LAYOUT
 ------------------------------------------- */ 
+/*
 #wrap {
 	position: relative;
 	width: 900px;	
@@ -219,6 +219,7 @@ input.button {
 	display: inline;	
 	//border-top: 1px solid #1A1A1A;
 }
+*/
 #header {
 	position: relative;
 	width: 900px;	
@@ -396,6 +397,7 @@ input.button {
 #sidebar ul.sidemenu ul li { border: none; }
 
 /* footer */
+/*
 #footer-wrap {
 	position: relative;
 	clear: both;
@@ -460,7 +462,7 @@ input.button {
 #footer-content .space-sep {
 	margin-right: 12px;
 }
-
+*/
 /* postmeta */
 .postmeta {	
 	padding: 7px 5px; margin: 20px 10px 15px 10px;	
@@ -494,6 +496,42 @@ input.button {
 	clear:both; 
 	height:0; 
 	content: "."; 
+}
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+  height: 60px;
+  background-color: #070707;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+#wrap > .container {
+  padding: 0 15px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+#footer > .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+code {
+  font-size: 80%;
 }
 
 
