@@ -10,8 +10,9 @@
 
     <title>chris in code</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap core CSS 
     <link href="dist/css/bootstrap.css" rel="stylesheet">
+    -->
 
     <!-- Custom styles for this template -->
 	<link href="css/style.css" rel="stylesheet">
@@ -22,28 +23,6 @@
     <!-- Wrap all page content here -->
     <div id="wrap">
 
-      <!-- Fixed navbar -->
-	  <!--
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">chris in code</a>
-          </div>
-          <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-	  -->
       <!-- Begin page content -->
       <div class="container">
 		<div id="loading" style="font-size:18px;color:#ffffff">loading...</div>
@@ -52,13 +31,11 @@
 			<div id ="users">
 			</div>
 			</h3>	
-		
-		<code>
-		<div id ="debug"></div>
-		<!-- content-wrap ends-->	
-		</code>
-		
-		
+        <div id="albumArt">
+            <div id="currentArt"></div>
+        </div>
+		<div id="artistPeriod"></div>
+		<div id="artist"></div>
       </div>
     </div>
 
@@ -66,13 +43,11 @@
       <div class="container">
       </div>
     </div>
+        <code><div id ="debug"></div></code>
 
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!--<script src="../../dist/js/bootstrap.min.js"></script>-->
 	<script src="script.js"></script>
   </body>
 </html>

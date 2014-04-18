@@ -11,7 +11,7 @@ obj = [
             'receivedData':
             {}
         },
-
+/*
         {'name':'Geddy', 
             'userAccounts':
             {
@@ -20,40 +20,36 @@ obj = [
             'receivedData':
             {}
         },
-        /*  {'name':'Jimbo',
-            'userAccounts':
-            {
-                'lastfm':'sk8ordietryin',
-            },
-            'receivedData':
-            {}
-        },
-        */
+*/
       ];
 
 var debug = true 
 var refresh = 30000
 
+var art = 0
 
 // api keys
 var key = new Object()
 key['lastfm'] = '774632169e435ce88f4f48a0d377cf25'
-key['metrolyrics'] = '1234567890123456789012345678901234567890'
 
 // thundercats ho!
 $(document).ready(function() {
 
-    if(debug)
-        $("#debug").append('debugging enabled (F12 for console log, shows objects)<br />')
-        $("#debug").append('WARNING THERE BE DRAGONS!!!<br />')
-        $("#debug").append('refresh interval set to '+refresh/1000+' seconds<br /><br />')
-    log(obj)
-
+    if(debug) {
+        $("#debug").append('debugging enabled - WARNING THERE BE DRAGONS<br />')
+        $("#debug").append('refresh interval set to '+refresh/1000+' seconds<br />')
+        log(obj)
+    }
+    else {
+        $('#debug').hide()
+    }
     // append user sections to page body
 	for(record in obj) {
         // create page div elements per name in array  
         $('#users').append('<div id="'+obj[record].name+'"></div><br />')
-        $('#'+obj[record].name).append(obj[record].name+'...')
+        $('#'+obj[record].name).append('<a href="http://last.fm/user/'+
+            obj[record].userAccounts.lastfm+'">'+
+            obj[record].name+'</a>...')
     }
 
     setInterval(function(){loop()},refresh);
@@ -62,6 +58,7 @@ $(document).ready(function() {
 	for(record in obj) {
         // get recent last FM played tracks
         call({api:'lastfm', method:'user.getRecentTracks', user: obj[record].userAccounts.lastfm, limit: 2});
+        call({api:'lastfm', method:'user.getTopArtists', user: obj[record].userAccounts.lastfm, period:'7day',limit:50});
 	}
 });
 
@@ -69,7 +66,6 @@ function loop() {
     $('#debug').empty()
     log('refresh '+Date()+'<br />')
 
-    //divsAdded = []
     // make api calls for each name
 	for(record in obj) {
         // get recent last FM played tracks
@@ -120,8 +116,9 @@ function call(vars) {
     // determine which API is being called
     if(vars.api == 'lastfm')
         call_lastfm(vars)
-    else if(vars.api == 'metrolyrics')
-        call_lyrics(vars.artist,vars.song)
+    else if(object.artisttracks) {
+        gotArtistTracks(object)
+    }
     else {
         log('unknown API call '+vars.api)
         log(vars)
@@ -196,7 +193,6 @@ function getJSON(url) {
 }
 
 // generic JSONP request and callbacks
-// FUCKING PADDING
 function getJSONP(url) {
     $.ajax({
         url:url,
@@ -223,7 +219,6 @@ function successCallback(object) {
         else
             nowplaying = 'false'
 
-        // save current song so assocation of lyrics can be made to user
         if(saveReceived(
             {'song': object.recenttracks.track[0].name.toLowerCase(),
              'artist': object.recenttracks.track[0].artist["#text"].toLowerCase(),
@@ -237,47 +232,22 @@ function successCallback(object) {
             log('already saved')
         }
 	}
-    else if(object.searchType) {
-        //gotLyrics(object)
-
-        // save lyrics to user with song
-        var name = findUserWithSong(object.items[0].title,object.items[0].artist)
-
-        saveReceived(
-            object.items[0],
-            'lyrics',
-            name
-        )
-        log('received lyrics for '+object.items[0].title+' by '+object.items[0].artist+
-                ' (associated to '+name+')')
-
-        var div = '#'+name+'_lyrics'
-        $('#'+name).append('<div id="'+name+'_lyrics"></div>')
-
-        //divsAdded.push(div)
-
-
-
-        // add lyrics to page
-        $(div).append('<br />')
-
-        var lyrics = object.items[0].snippet.replace(/[\n\r]/g,'<br />')
-        if(lyrics.substring([lyrics.length-6],lyrics.length) != '<br />')
-            lyrics += '<br />'
-
-        $(div).append(lyrics)
-
-        $('<a href="'+object.items[0].url+'">...</a>').appendTo($(div));
-        $(div).css({'marginLeft':'40px'})
+    // top artist callback
+    else if(object.topartists) {
+        var name = findUserAccount('lastfm',object.topartists["@attr"].user)
+        log('received: '+name+' lastFM top artists')
+        log(object)
+        gotLastFMartists(object,name)
+    }
+    // single artist & tracks callback
+    else if(object.artisttracks) {
+        gotArtistTracks(object)
     }
     // failure message
 	else {
 		log('ERROR or callback undefined')
 		log(object)
-		//$('#error').append('error :(')
 	}	
-
-	//log(object)
     $('#loading').hide()
 }
 
@@ -289,17 +259,6 @@ function findUserAccount(attr,val){
             return (obj[record].name)
     }
     return 'UNKNOWN' 
-}
-
-// determine name associated with song/artist
-// useful when trying to associate lyrics to user
-function findUserWithSong(song,artist) {
-    for(record in obj) {
-        if(obj[record].receivedData.lastfm.song == song.toLowerCase() &&
-           obj[record].receivedData.lastfm.artist == artist.toLowerCase() ) 
-            return obj[record].name
-    }
-    return 'UNKNOWN'
 }
 
 // check if received data is already saved so it can be ignored
@@ -334,13 +293,18 @@ function saveReceived(addObject,category,name){
 // last FM recent tracks callback
 function gotLastFMrecent(object, name) {
 
-
     // name_recenttrack page element
     var div = '#'+name+'_recenttrack'
     $(div).remove()
     $('#'+name+'_lyrics').remove()
+    var lastfm
+    for(record in obj) {
+        if(obj[record].name == name) {
+            lastfm = obj[record].userAccounts.lastfm
+        }
+    }
+
     $('#'+name).append('<div id="'+name+'_recenttrack"></div>')
-    //divsAdded.push(div)
 
 
     // current or last played
@@ -354,47 +318,153 @@ function gotLastFMrecent(object, name) {
     $(div).append(' by ');
     $('<a href="'+object.recenttracks.track[0].url.split('/_/')[0]+'">'+object.recenttracks.track[0].artist["#text"]+'.</a>').appendTo($(div));
 
-    // get lyrics
-    call({api:'metrolyrics', method:'lyrics', 
-        artist: object.recenttracks.track[0].artist["#text"], 
-        song: object.recenttracks.track[0].name});
+    addArt(object) 
 
     return true
 }
 
-// get lyrics
-function call_lyrics(artist,song){
+// last FM top artists
+function gotLastFMartists(object,name) {
+    $('#artistPeriod').append('Top Artists for the last week')
+    var type =  object.topartists["@attr"].type
+    log('top artist interval: '+type)
+    var flip = false
+    var max,min
+    max = object.topartists.artist[0].playcount
+    min = object.topartists.artist[object.topartists.artist.length-1].playcount
+    for(a in object.topartists.artist) {
+        size = parseInt(object.topartists.artist[a].playcount)
+        size += 8 
+        if(size > 40) size=40
+        log(object.topartists.artist[a].name+', '+object.topartists.artist[a].playcount+' plays, (font size: '+Math.round(size)+')')
+        $('#artist').append(
+            '<div id="'+htmlEsc(object.topartists.artist[a].name)+'" style="'+
+            'margin:2px;height:100%;'+
+            'font-size:'+
+            size
+            +'px;">'+ 
+            '<a href="'+object.topartists.artist[a].url+'">'+
+            object.topartists.artist[a].name+
+            '</a></div>')
+        $('#'+htmlEsc(object.topartists.artist[a].name)).css('height',
+        size-size/6+'px'
+        )
+        if(flip){
+           $('#'+htmlEsc(object.topartists.artist[a].name)).css('font-style','italic')
+        }
+        flip = !flip //flop
 
-	var url = 'http://api.metrolyrics.com/v1/search/lyrics/?find='
-    url += artist+'%20'+song
-    url += '&X-API-KEY='+key['metrolyrics']
-    url = url.replace(' ','%20')
-    url = url.replace(' ','%20')
-    url += '&format=jsonp'     
-
-    log('http://api.metrolyrics.com/v1/method/Lyrics')
-
-    log(url)
-
-    var callLog = 'call to | '
-    callLog+= 'api:<a href="http://api.metrolyrics.com">metrolyrics</a> | '
-    callLog+= 'method:<a href="http://api.metrolyrics.com/v1/method/Lyrics">lyrics</a> | '
-    callLog+= 'artist: '+artist+' | '
-    callLog+= 'song: '+song+' | '
-    callLog+='<a href="'+url+'">url</a>'
-
-    log(callLog)
-
-
-    getJSONP(url)
+        // call for last FM last song listened to of..
+        call({api:'lastfm', method:'user.getArtistTracks', user: obj[record].userAccounts.lastfm, artist:htmlReplace(object.topartists.artist[a].name),limit:1});
+    }
 
 }
 
+function gotArtistTracks(object) {
+    log(object)
+    if(object.artisttracks["@attr"].items > 1) {
+        $('#'+htmlEsc(object.artisttracks["@attr"].artist)).append(
+        ' - <a href="'+object.artisttracks.track.url+'" style="color:gray">'+object.artisttracks.track.name+'</a>'
+        )
+        addArt(object)
+    }
+    else {
+        $('#'+htmlEsc(object.artisttracks["@attr"].artist)).append(
+        ' - '+object.artisttracks.track.name
+        )
+        $('#'+htmlEsc(object.artisttracks["@attr"].artist)).css('height','100%')
+        addArt(object)
+    } 
+}
+
+function addArtToPage(div,img,size,url) {
+    if(img =='')
+        return
+
+    art += 1
+    if(art >21)
+        return
+
+    if(!size) size = 126
+
+    $('#albumArt').append(
+      '<div id="'+
+      htmlEsc(div)
+      +'Art">'+
+      '<a href="'+url+'" style=""><img src="'+
+      img
+      +'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>'
+      +'</div>'
+      )
+}
+
+function addCurrentArtToPage(div,img,size,url) {
+    if(img =='')
+        return
+
+    $('#currentArt').html(
+      '<a href="'+url+'" style=""><img src="'+
+      img
+      +'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>'
+      )
+}
 
 
+function addArt(object) {
+    // recently or currently played
+    if(object.recenttracks) {
+        if(object.recenttracks.track[0]){
+            addCurrentArtToPage(
+                //htmlEsc(object.recenttracks.track[0].name),
+                'current',
+                object.recenttracks.track[0].image[3]["#text"],
+                300,
+                object.recenttracks.track[0].url
+
+            )
+        }
+        else if(object.recenttracks.track){
+            addCurrentArtToPage(
+                //htmlEsc(object.recenttracks.track.name),
+                'current',
+                object.recenttracks.track.image[3]["#text"],
+                300,
+                object.recenttracks.track.url
+            )
+
+        }
+    }
+    // artist in general
+    else if (object.artisttracks) {
+      if(object.artisttracks.track[0]) {
+            addArtToPage(
+                htmlEsc(object.artisttracks.track[0].name),
+                object.artisttracks.track[0].image[2]["#text"],126,
+                object.artisttracks.track[0].url
+            )
+      }
+      else if (object.artisttracks.track) {
+            addArtToPage(
+                htmlEsc(object.artisttracks.track.name),
+                object.artisttracks.track.image[2]["#text"],126,
+                object.artisttracks.track.url
+            )
+      }
+    }
+}
 
 
+function htmlReplace(str) {
+    return String(str)
+            .replace(/[&]/g,'%26')
+//            .replace(/[' &']/g,'%20')
+}
 
+function htmlEsc(str) {
+    return String(str)
+            .replace(/['.& ]/g, '')
+            .replace(/[!]/g,'');
+}
 
 
 
