@@ -6,24 +6,13 @@ obj = [
             'userAccounts':
             {
                 'lastfm':'raylinth',
-                'steam':'raylinth'
             },
             'receivedData':
             {}
         },
-/*
-        {'name':'Geddy', 
-            'userAccounts':
-            {
-                'lastfm':'Eclisiast',
-            },
-            'receivedData':
-            {}
-        },
-*/
       ];
 
-var debug = true 
+var debug = true
 var refresh = 30000
 
 var art = 0
@@ -142,7 +131,8 @@ function call_lastfm(vars) {
 		url += '&'+v+'='+vars[v]
 	}
 
-    var callLog = 'call to | '
+    var callLog = 'call to '
+    callLog+='<a href="'+url+'">url</a> |'
     for(v in vars) { 
         callLog+=v+':'
         if(v == 'method') {
@@ -159,7 +149,6 @@ function call_lastfm(vars) {
             callLog += vars[v]
         callLog += ' | '
     }
-    callLog+='<a href="'+url+'">url</a>'
 
     log(callLog)
 
