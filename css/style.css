@@ -542,6 +542,10 @@ code {
 }
 #users {
   border-bottom: 1px dotted #ABABAB;
+  font-size: 1.8em;
+  font-weight: normal;
+  padding: 20px 10px 5px 10px;	
+
 }
 #artist {
   font-weight: bold;
