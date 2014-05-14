@@ -1,3 +1,59 @@
+var debug = true
+var refresh = 0 //30000
+var artCount = 0
+
+// api keys
+var key = new Object()
+key['lastfm'] = '774632169e435ce88f4f48a0d377cf25'
+
+// initialize
+function init() {
+    // toggle debugging
+    if(debug) {
+        log('debugging enabled - WARNING THERE BE DRAGONS')
+        log('refresh interval set to '+refresh/1000+' seconds')
+    }
+    else {
+        $('#debug').hide()
+    }
+
+    // set refresh interval
+    if(refresh > 0)
+        setInterval(function(){loop()},refresh);
+
+    // user area
+    newDiv('users')
+    newDiv('albumArt')
+    newDiv('albumArt','currentArt')
+    newDiv('artistPeriod')
+    newDiv('artist')
+
+    // append user sections to page body
+    for(record in obj) {
+        // create user elements per name in array  
+        newDiv ('users',obj[record].name)
+        $('#'+obj[record].name).append('<a href="http://last.fm/user/'+
+            obj[record].userAccounts.lastfm+'">'+
+            obj[record].name+'</a>...')
+    }
+}
+
+// add new div - overloaded
+// one parameter: add to container
+// two parameters: add child to parent container
+function newDiv(parent, child) {
+    if(!child)
+        $('.container').append('<div id="'+parent+'"></div>')
+    else
+    {
+         // avoid accidentally adding pound symbol
+        if(child[0] == '#')
+            child = child.substring(1)
+        $('#'+parent).append('<div id="'+child+'"></div>')
+    }
+}
+
+// on loop
 function loop() {
     $('#debug').empty()
     log('refresh '+Date()+'<br />')
@@ -11,7 +67,7 @@ function loop() {
 
 // debug logging
 function log(message,overrule) {
-    if(!overrule && !debug) return
+    if(!debug) return
 
     // console logging    
     console.log(message)
@@ -43,12 +99,6 @@ function call(vars) {
     // I'm gonna demand an API and method defined 
 	if(!vars.api || !vars.method) return
 
-    // debug informationon call parameters
-    var callLog = 'call to : '
-    for(v in vars) 
-        callLog += v+':'+vars[v]+' | '
-    //log(callLog)
-
     // determine which API is being called
     if(vars.api == 'lastfm')
         call_lastfm(vars)
@@ -78,26 +128,30 @@ function call_lastfm(vars) {
 		url += '&'+v+'='+vars[v]
 	}
 
-    var callLog = 'call to '
-    callLog+='<a href="'+url+'">url</a> |'
-    for(v in vars) { 
-        callLog+=v+':'
-        if(v == 'method') {
-            callLog+= '<a href="http://www.last.fm/api/show/'+vars[v]+'">'+vars[v]+'</a>'
+    // debug, log API call verbose
+    if(debug)
+    {
+        var callLog = 'call to '
+        callLog+='<a href="'+url+'">url</a> |'
+        for(v in vars) { 
+            callLog+=v+':'
+            if(v == 'method') {
+                callLog+= '<a href="http://www.last.fm/api/show/'+vars[v]+'">'+vars[v]+'</a>'
+            }
+            else if(v == 'api') {
+                callLog+= '<a href="http://www.last.fm/api">'+vars[v]+'</a>'
+            }
+            else if(v == 'user') {
+                callLog+= '<a href="http://www.last.fm/user/'+vars[v]+'">'+vars[v]+'</a>'
+                
+            }
+            else  
+                callLog += vars[v]
+            callLog += ' | '
         }
-        else if(v == 'api') {
-            callLog+= '<a href="http://www.last.fm/api">'+vars[v]+'</a>'
-        }
-        else if(v == 'user') {
-            callLog+= '<a href="http://www.last.fm/user/'+vars[v]+'">'+vars[v]+'</a>'
-            
-        }
-        else  
-            callLog += vars[v]
-        callLog += ' | '
-    }
 
-    log(callLog)
+        log(callLog)
+    }
 
 	//make api call
 	getJSON(url)
@@ -211,7 +265,8 @@ function checkSaved(addObject,category,name){
     }
     return false
 }
-// add to person obj array for future reference
+
+// save new recieved data for person
 function saveReceived(addObject,category,name){
 
     if(checkSaved(addObject,category,name))
@@ -240,19 +295,19 @@ function gotLastFMrecent(object, name) {
         }
     }
 
-    $('#'+name).append('<div id="'+name+'_recenttrack"></div>')
-
+    recenttrackDiv = '#'+name+'_recenttrack'
+    newDiv('users',recenttrackDiv)
 
     // current or last played
     if(object.recenttracks.track[0]["@attr"] && object.recenttracks.track[0]["@attr"].nowplaying) 
-        $(div).append('Currently listening to ');
+        $(recenttrackDiv).append('Currently listening to ');
 	else 
-		$(div).append('Last listened to ')
+		$(recenttrackDiv).append('Last listened to ')
 
     // song and artist links
-    $('<i><a href="'+object.recenttracks.track[0].url+'">'+object.recenttracks.track[0].name+'</a></i>').appendTo($(div));
-    $(div).append(' by ');
-    $('<a href="'+object.recenttracks.track[0].url.split('/_/')[0]+'">'+object.recenttracks.track[0].artist["#text"]+'.</a>').appendTo($(div));
+    $('<i><a href="'+object.recenttracks.track[0].url+'">'+object.recenttracks.track[0].name+'</a></i>').appendTo($(recenttrackDiv));
+    $(recenttrackDiv).append(' by ');
+    $('<a href="'+object.recenttracks.track[0].url.split('/_/')[0]+'">'+object.recenttracks.track[0].artist["#text"]+'.</a>').appendTo($(recenttrackDiv));
 
     addArt(object) 
 
@@ -261,32 +316,34 @@ function gotLastFMrecent(object, name) {
 
 // last FM top artists
 function gotLastFMartists(object,name) {
+    // duration (currently statically last week)
     $('#artistPeriod').append('Top Artists for the last week')
     var type =  object.topartists["@attr"].type
     log('top artist interval: '+type)
+
     var flip = false
     var max,min
     max = object.topartists.artist[0].playcount
     min = object.topartists.artist[object.topartists.artist.length-1].playcount
+
+    // for each artists 
     for(a in object.topartists.artist) {
+
+        // determine size threshold for font
         size = parseInt(object.topartists.artist[a].playcount)
         size += 8 
         if(size > 40) size=40
         log(object.topartists.artist[a].name+', '+object.topartists.artist[a].playcount+' plays, (font size: '+Math.round(size)+')')
-        $('#artist').append(
-            '<div id="'+htmlEsc(object.topartists.artist[a].name)+'" style="'+
-            'margin:2px;height:100%;'+
-            'font-size:'+
-            size
-            +'px;">'+ 
-            '<a href="'+object.topartists.artist[a].url+'">'+
-            object.topartists.artist[a].name+
-            '</a></div>')
-        $('#'+htmlEsc(object.topartists.artist[a].name)).css('height',
-        size-size/6+'px'
-        )
+
+        // add new artist to page
+        newArtist = '#'+htmlEsc(object.topartists.artist[a].name)
+        newDiv('artist',newArtist)
+        $(newArtist).append('<a href="'+object.topartists.artist[a].url+'">'+newArtist.substring(1)+'</a>')
+        $(newArtist).css('height',size-size/6+'px')
+        $(newArtist).css('font-size',size)
+        $(newArtist).css('margin','2px')
         if(flip){
-           $('#'+htmlEsc(object.topartists.artist[a].name)).css('font-style','italic')
+           $(newArtist).css('font-style','italic')
         }
         flip = !flip //flop
 
@@ -313,45 +370,12 @@ function gotArtistTracks(object) {
     } 
 }
 
-function addArtToPage(div,img,size,url) {
-    if(img =='')
-        return
-
-    art += 1
-    if(art >21)
-        return
-
-    if(!size) size = 126
-
-    $('#albumArt').append(
-      '<div id="'+
-      htmlEsc(div)
-      +'Art">'+
-      '<a href="'+url+'" style=""><img src="'+
-      img
-      +'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>'
-      +'</div>'
-      )
-}
-
-function addCurrentArtToPage(div,img,size,url) {
-    if(img =='')
-        return
-
-    $('#currentArt').html(
-      '<a href="'+url+'" style=""><img src="'+
-      img
-      +'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>'
-      )
-}
-
-
+// generic add art
 function addArt(object) {
     // recently or currently played
     if(object.recenttracks) {
         if(object.recenttracks.track[0]){
             addCurrentArtToPage(
-                //htmlEsc(object.recenttracks.track[0].name),
                 'current',
                 object.recenttracks.track[0].image[3]["#text"],
                 300,
@@ -361,13 +385,11 @@ function addArt(object) {
         }
         else if(object.recenttracks.track){
             addCurrentArtToPage(
-                //htmlEsc(object.recenttracks.track.name),
                 'current',
                 object.recenttracks.track.image[3]["#text"],
                 300,
                 object.recenttracks.track.url
             )
-
         }
     }
     // artist in general
@@ -387,6 +409,39 @@ function addArt(object) {
             )
       }
     }
+}
+
+// add art to specific page element
+function addArtToPage(div,img,size,url) {
+    div = htmlEsc(div)
+
+    if(img =='')
+        return
+
+    artCount += 1
+    if(artCount >21)
+        return
+
+    if(!size) size = 126
+
+    newDiv('albumArt',div)
+    div = '#'+div
+    $(div).css('height',size*0.8)
+    $(div).css('width',size*0.8)
+    $(div).css('margin-right','30px')
+
+    $(div).css('float','left')
+    $(div).append('<a href="'+url+'"><img src="'+img+'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>')
+}
+
+// handle current differently (size and static placement)
+function addCurrentArtToPage(div,img,size,url) {
+    if(img =='')
+        return
+
+    $('#currentArt').html(
+      '<a href="'+url+'"><img src="'+img+'" height="'+size*0.8+'" width="'+size*0.8+'" style="float:left;"></a>'
+      )
 }
 
 
