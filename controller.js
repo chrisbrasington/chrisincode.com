@@ -3,6 +3,8 @@ debug = true
 // intialization
 function init() {
     doneLoading()
+    if(!debug)
+        $('#footer').hide()
 }
 
 polarChart
