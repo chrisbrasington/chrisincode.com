@@ -509,7 +509,7 @@ input.button {
 
 /* Set the fixed height of the footer here */
 #footer {
-  height: 60px;
+  //height: 60px;
   background-color: #070707;
 }
 
@@ -545,25 +545,41 @@ code {
   font-size: 1.8em;
   font-weight: normal;
   padding: 20px 10px 5px 10px;	
-
 }
 #artist {
   font-weight: bold;
   line-height:80%;
-  float:left;
   margin-bottom:20px;
-  margin-left:10px;
+  margin-top:50px;
+  float:left;
+  width:60%;
+
 }
 #albumArt {
-  width:100%;
-height:100%;
-float:left;
 }
 #artistPeriod {
   font-weight: bold;
   margin-bottom:20px;
   margin-left:10px;
+  margin-top:40px;
   font-size:14px;
   color:#ABABAB;
+  padding-left:100px;
+  padding-top:3%;
+  float:left;
 }
 
+#polarChart {
+}
+
+#polarChartInfo {
+	width:100;
+	height:700;
+	float:right;
+
+	margin-top:70px;
+	margin-left:-100px;
+	margin-right:100px;
+	color:white;
+}
+;
