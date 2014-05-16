@@ -1,6 +1,6 @@
 // generic JSON request and callbacks
 function getJSON(url, callBack) {
-	log(url)
+	log(url);
 	$.ajax({
 	        url: url,
             type: "get",
@@ -8,24 +8,24 @@ function getJSON(url, callBack) {
 	        dataType: 'json',
 	        success: function(data){
 	        	if(typeof(callBack) =='function')
-	        		callBack(data)
+	        		callBack(data);
 	        	else if(typeof(callBack) =='object')
 	        	{
 	        		for(c in callBack) {
-	        			callBack[c](data)
+	        			callBack[c](data);
 	        		}
 	        	}
 	        	else
 	        	{
-	        		log('no callback specified')
-	        		log(data)
-	        		log(url)
-	        		log(typeof(callBack))
-	        		log(callBack)
+	        		log('no callback specified');
+	        		log(data);
+	        		log(url);
+	        		log(typeof(callBack));
+	        		log(callBack);
 	        	}
 	        },
 		error: function(r) { 
-			log('retrieve JSON - failure') 
+			log('retrieve JSON - failure') ;
 		}
 	});
 }
@@ -38,15 +38,15 @@ function getJSONP(url) {
         dataType: 'jsonp',
         success: function(data){
 	        	if(typeof(callBack) =='function')
-	        		callBack(data)
+	        		callBack(data);
 	        	else
 	        	{
-	        		log('no callback specified')
-	        		log(data)
+	        		log('no callback specified');
+	        		log(data);
 	        	}
 	        },
 		error: function(r) { 
-			log('retrieve JSONP - failure') 
+			log('retrieve JSONP - failure') ;
 		}
     });
 }
@@ -56,10 +56,10 @@ function call(params,callBack) {
 	if(params.api)
 	{
 		if(typeof(params.api) != 'function')
-			throw('pass API param as a function!')
+			throw('pass API param as a function!');
 		else
-			params.api(params,callBack)
+			params.api(params,callBack);
 	}
 	else
-		getJSON(params.url,params.callBack)
+		getJSON(params.url,params.callBack);
 }

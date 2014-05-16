@@ -1,30 +1,30 @@
-debug = true
+debug = false;
 
 // intialization
 function init() {
-    doneLoading()
+    doneLoading();
     if(!debug)
-        $('#footer').hide()
+        $('#footer').hide();
 }
 
-polarChart
+polarChart;
 
 // thundercats ho!
 $(document).ready(function() {
-    init()
+    init();
 
     // create page elements
-    newDiv('users')
-    newDiv('albumArt')
-    newDiv('albumArt','currentArt')
-    newDiv('artist')
+    newDiv('users');
+    newDiv('albumArt');
+    newDiv('albumArt','currentArt');
+    newDiv('artist');
     //newDiv('artist','artistPeriod')
-
+    
     // loop users
     for(record in model) {
 
         // user area
-        newDiv('users', model[record].name)
+        newDiv('users', model[record].name);
 
         // get recent tracks
         call({  api:lastfm, 
@@ -49,7 +49,7 @@ $(document).ready(function() {
 function findUserAccount(attr,val){
     for(record in model) {
         if(model[record].userAccounts[attr] == val)
-            return (model[record].name)
+            return (model[record].name);
     }
-    return 'UNKNOWN' 
+    return 'UNKNOWN' ;
 }

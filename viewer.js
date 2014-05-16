@@ -1,7 +1,7 @@
 // create html links
 function linkify(url, text) {
 
-	return '<a href="'+url+'">'+text+'</a>'
+	return '<a href="'+url+'">'+text+'</a>';
 }
 
 // debug logging
@@ -9,12 +9,12 @@ function log(message, obj) {
     if(!debug) return
 
     // console logging    
-    console.log(message)
+    console.log(message);
 
     // logging to page: objects (skipped), urls, and text
     if(typeof(message) == 'object'){
         //$("#debug").append(JSON.stringify(message))
-        return
+        return;
     }
     else if(typeof(message) == 'string'){
         if(message.substring(0,4) ==  'http') {
@@ -22,23 +22,23 @@ function log(message, obj) {
             //$("#debug").append('<br />')
         }
         else {
-            $("#debug").append(message)
-            $("#debug").append('<br />')
+            $("#debug").append(message);
+            $("#debug").append('<br />');
         }
     }
     else {
-        $("#debug").append(message)
-        $("#debug").append('<br />')
+        $("#debug").append(message);
+        $("#debug").append('<br />');
     }
     if(typeof(obj)=='object')
-    	log(obj)
+    	log(obj);
 
 }
 
 // done loading page
 function doneLoading() {
 
-    $('#loading').hide()
+    $('#loading').hide();
 }
 
 // add new div - overloaded
@@ -46,13 +46,13 @@ function doneLoading() {
 // two parameters: add child to parent container
 function newDiv(parent, child) {
     if(!child)
-        $('.container').append('<div id="'+parent+'"></div>')
+        $('.container').append('<div id="'+parent+'"></div>');
     else
     {
          // avoid accidentally adding pound symbol
         if(child[0] == '#')
-            child = child.substring(1)
-        $('#'+parent).append('<div id="'+child+'"></div>')
+            child = child.substring(1);
+        $('#'+parent).append('<div id="'+child+'"></div>');
     }
 }
 
@@ -66,6 +66,6 @@ function htmlEsc(str) {
 // html replace
 function htmlReplace(str) {
     return String(str)
-            .replace(/[&]/g,'%26')
-//            .replace(/[' &']/g,'%20')
+            .replace(/[&]/g,'%26');
+//            .replace(/[' &']/g,'%20';
 }

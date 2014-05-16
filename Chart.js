@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://github.com/nnnick/Chart.js/blob/master/LICENSE.md
  */
- 
+
 //Define the global Chart Variable as a class.
 window.Chart = function(context){
 
@@ -706,7 +706,6 @@ window.Chart = function(context){
 		animationLoop(config,null,drawPieSegments,ctx);
 				
 		function drawPieSegments (animationDecimal){
-
 			var cumulativeAngle = -Math.PI/2,
 			scaleAnimation = 1,
 			rotateAnimation = 1;
@@ -754,12 +753,6 @@ window.Chart = function(context){
 		
 		
 		function drawPieSegments (animationDecimal){
-			ctx.font = config.labelFontStyle + " " + config.labelFontSize+"px " + config.labelFontFamily;
-	        ctx.fillStyle = 'white';
-	        ctx.textBaseline = 'middle';
-
-	        ctx.fillText(data[0].name + ' #1', width/2 - 60, width/2, 200);
-
 			var cumulativeAngle = -Math.PI/2,
 			scaleAnimation = 1,
 			rotateAnimation = 1;
@@ -1429,4 +1422,5 @@ window.Chart = function(context){
 	    return data ? fn( data ) : fn;
 	  };
 }
+
 

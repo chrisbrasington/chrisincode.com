@@ -13,6 +13,6 @@ model = [
       ];
 
 // API keys
-var key = new Object()
-key['lastfm'] = '774632169e435ce88f4f48a0d377cf25'
+var key = new Object();
+key['lastfm'] = '774632169e435ce88f4f48a0d377cf25';
 //key['grooveshark'] = ''
