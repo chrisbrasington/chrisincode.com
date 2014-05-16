@@ -1,8 +1,10 @@
 // user info
 // name is used to dynamically create page elements when content is received
 // each API call gets a page element under the user parent
-model = [ 
-        {'name':'Christopher', 
+model = 
+{ 
+	Christopher:
+        {
             'userAccounts':
             {
                 'lastfm':'raylinth',
@@ -10,7 +12,7 @@ model = [
             'receivedData':
             {}
         }
-      ];
+};
 
 // API keys
 var key = new Object();
