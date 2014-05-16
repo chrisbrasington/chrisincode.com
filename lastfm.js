@@ -36,19 +36,22 @@ function recentTracksCallback (obj)
 	artist = obj.recenttracks.track[0].artist["#text"];
 	track = obj.recenttracks.track[0].name;
 	url = obj.recenttracks.track[0].url;
-	div = '#'+findUserAccount('lastfm',user);	
+	name = findUserAccount('lastfm',user);	
+	div = '#'+name;	
+
 	if(obj.recenttracks.track[0]["@attr"])
 		nowPlaying = true;
 	else
 		nowPlaying = false;
 
-	log('received recent tracks for '+div.substring(1),obj);
+	log('received recent tracks for '+name,obj);
 
 	// add to page
 	// user currently or last listened to...
-	$(div).append(linkify('http://last.fm/user/'+user,div.substring(1))+'...');
+	
 	div += '_recenttrack';
 	newDiv('users',div);
+	$(div).append(linkify('http://last.fm/user/'+user,name)+'...<br />');
 	if(typeof(nowPlaying)=='obj')
 		$(div).append('Currentling listening to ');
 	else
