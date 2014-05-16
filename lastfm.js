@@ -16,7 +16,19 @@ function lastfm(params, callBack)
 		url += '&'+p+'='+params[p];
 	}
 
-	log('lastfm call to: '+linkify(url,'url'));
+	// LOGGING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	if(debug) {
+		logcall = 'lastfm call to: '+linkify(url,'url');
+		for(p in params) {
+			logcall += ' | ';
+			if(p == 'method')
+				logcall += linkify('http://www.last.fm/api/show/'+params['method'],params['method']);
+			else
+				logcall += p+': '+params[p];
+		}
+		log(logcall);
+	}
+	// END LOGGING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	call({url:url,callBack:callBack});
 }
