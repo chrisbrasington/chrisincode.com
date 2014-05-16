@@ -49,7 +49,7 @@ $(document).ready(function() {
 function findUserAccount(attr,val){
     for(record in model) {
         if(model[record].userAccounts[attr] == val)
-            return (model[record].name);
+            return (record);
     }
     return 'UNKNOWN' ;
 }
