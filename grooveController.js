@@ -1,3 +1,31 @@
+debug = true;
+
+// intialization
+function init() {
+    doneLoading();
+    if(!debug)
+        $('#footer').hide();
+}
+
+// find user in model based on api account
+function findUserAccount(attr,val){
+    for(record in model) {
+        if(model[record].userAccounts[attr] == val)
+            return (record);
+    }
+    return 'UNKNOWN' ;
+}
+
+// thundercats ho!
+$(document).ready(function() {
+    init();
+
+    // loop users
+    for(record in model) {
+		groove(record);
+    }
+});
+
 receivedTracks = 0;
 
 function groove(user)
@@ -88,9 +116,3 @@ function groovePlayList()
 	log("okay, playlist built. now how the fuck do I talk to "+linkify('http://developers.grooveshark.com/docs/public_api/v3/','grooveshark?'));
 
 }
-
-
-
-
-
-
