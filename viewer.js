@@ -27,12 +27,17 @@ function log(message, obj) {
         }
     }
     else {
+    	// empty, newline 
         $("#debug").append(message);
         $("#debug").append('<br />');
     }
     if(typeof(obj)=='object')
     	log(obj);
 
+}
+function lol(message)
+{
+	$("#debug").append(message);
 }
 
 // done loading page

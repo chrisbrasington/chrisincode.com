@@ -21,9 +21,16 @@ $(document).ready(function() {
     init();
 
     // loop users
+    /*
     for(record in model) {
 		groove(record);
     }
+    */
+   
+   log("CHEATING, using already populated model!");
+   log();
+   receivedTracks = 5;
+   groovePlayList();
 });
 
 receivedTracks = 0;
@@ -94,11 +101,11 @@ function grooveLastFMTrack(obj)
 
 function groovePlayList()
 {
-	log();
 	log('received enough songs ('+receivedTracks+')');
 	log('building playlist...');
 	log();
 	log(model);
+	//log(JSON.stringify(model));
 	
 	playlist = {};
 	
@@ -107,12 +114,13 @@ function groovePlayList()
 		for(artist in model[record].receivedData.tracks)
 		{
 			track = model[record].receivedData.tracks[artist].name;
-			log(artist+': '+track);
+			log('-----> '+artist+': '+track);
 			playlist[artist] = track;
 		}
 	}
 	log(playlist);
 	log();
-	log("okay, playlist built. now how the fuck do I talk to "+linkify('http://developers.grooveshark.com/docs/public_api/v3/','grooveshark?'));
-
+	log('here we go...');
+	log();
+	call({api:grooveshark});
 }
