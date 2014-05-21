@@ -15,5 +15,4 @@ API calling created from scratch.
 Experiementing with sending information from last.fm to grooveshark as a playlist. Ditching javascript.
 ([lastfm-grooveshark-playlist-generator](https://github.com/chrisbrasington/lastfm-grooveshark-playlist-generator))
 
-([PHP-Last.fm-API](https://github.com/matto1990/PHP-Last.fm-API))
-([GroovesharkAPI-PHP](https://github.com/fastest963/GroovesharkAPI-PHP))
+Probably python.
